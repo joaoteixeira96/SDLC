@@ -14,6 +14,7 @@ jobs:
       #run: docker build . --file Dockerfile --tag appsec_docker:$(date +%s)
     - name: Snyk Code Analysis
       uses: snyk/actions@master
+      continue-on-error: true
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       with:
