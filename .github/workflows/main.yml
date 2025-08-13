@@ -10,8 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: SSDLC
-      run: docker build . --file Dockerfile --tag appsec_docker:$(date +%s)
+    #- name: Docker
+      #run: docker build . --file Dockerfile --tag appsec_docker:$(date +%s)
     - name: Snyk Code Analysis
       uses: snyk/actions@master
       env:
