@@ -1,3 +1,4 @@
+name: CI Pipeline
 on:
   push:
     branches: [ "main" ]
@@ -11,10 +12,14 @@ jobs:
     - uses: actions/checkout@v4
     - name: SSDLC
       run: docker build . --file Dockerfile --tag appsec_docker:$(date +%s)
-    - name: Snyk IaC Scan
-      uses: snyk/actions/iac@master
+    - name: Snyk Code Analysis
+      uses: snyk/actions@master
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       with:
-        command: test
-        args: --severity-threshold=high
+        command: code test
+        args: --severity-threshold=high --sarif-file-output=snyk.sarif
+    - name: Upload SARIF file
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: snyk.sarif
