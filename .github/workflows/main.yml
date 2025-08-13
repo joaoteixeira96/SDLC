@@ -1,4 +1,4 @@
-name: CI Pipeline
+name: CI Secure Pipeline
 on:
   push:
     branches: [ "main" ]
@@ -6,21 +6,26 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  docker:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    #- name: Docker
-      #run: docker build . --file Dockerfile --tag appsec_docker:$(date +%s)
-    - name: Snyk Code Analysis
-      uses: snyk/actions@master
-      continue-on-error: true
-      env:
-        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      with:
-        command: code test
-        args: --severity-threshold=high --sarif-file-output=snyk.sarif
-    - name: Upload SARIF file
-      uses: github/codeql-action/upload-sarif@v3
-      with:
-        sarif_file: snyk.sarif
+      - uses: actions/checkout@v4
+      - name: Docker Build
+        run: docker build . --file Dockerfile --tag appsec_docker:$(date +%s)
+
+  snyk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Snyk Code Analysis
+        uses: snyk/actions@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: code test
+          args: --severity-threshold=high --sarif-file-output=snyk.sarif
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: snyk.sarif
